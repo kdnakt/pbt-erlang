@@ -26,7 +26,7 @@ biggest([Head | Tail]) ->
 
 biggest([], Biggest) ->
     Biggest;
-biggest([Head|Tail], Biggest) when Head > Biggest ->
+biggest([Head|Tail], Biggest) when Head >= Biggest ->
     biggest(Tail, Head);
 biggest([Head|Tail], Biggest) when Head < Biggest ->
     biggest(Tail, Biggest).
