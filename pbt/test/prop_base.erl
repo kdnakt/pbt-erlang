@@ -10,10 +10,19 @@ prop_test() ->
             boolean(Type)
         end).
 
+prop_biggest() ->
+    ?FORALL(List, list(integer()),
+        begin
+            biggest(List) =:= lists:last(lists:sort(List))
+        end).
+
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
 boolean(_) -> true.
+
+biggest([Head | _Tail]) ->
+    Head.
 
 %%%%%%%%%%%%%%%%%%
 %%% Generators %%%
