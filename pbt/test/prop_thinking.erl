@@ -11,3 +11,9 @@ prop_biggest() ->
 model_biggest(List) ->
     lists:last(lists:sort(List)).
 
+prop_last() ->
+    ?FORALL({List, KnownLast}, {list(number()), number()},
+        begin
+            KnownList = List ++ [KnownLast],
+            KnownLast =:= lists:last(KnownList)
+        end).
