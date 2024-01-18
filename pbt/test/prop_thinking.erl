@@ -17,3 +17,32 @@ prop_last() ->
             KnownList = List ++ [KnownLast],
             KnownLast =:= lists:last(KnownList)
         end).
+
+prop_sort() ->
+    ?FORALL(List, list(term()),
+        is_ordered(lists:sort(List))
+    ).
+
+is_ordered([A,B|T]) ->
+    A =< B andalso is_ordered([B|T]);
+is_ordered(_) -> % 2要素未満のリスト
+    true.
+
+prop_same_size() ->
+    ?FORALL(L, list(number()),
+        length(L) =:= length(lists:sort(L))).
+
+prop_no_added() ->
+    ?FORALL(L, list(number()),
+        begin
+            Sorted = lists:sort(L),
+            lists:all(fun(Element) -> lists:member(Element, L) end, Sorted)
+        end).
+
+prop_no_removed() ->
+    ?FORALL(L, list(number()),
+        begin
+            Sorted = lists:sort(L),
+            lists:all(fun(Element) -> lists:member(Element, Sorted) end, L)
+        end).
+
