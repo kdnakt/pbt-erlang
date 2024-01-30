@@ -46,3 +46,13 @@ prop_no_removed() ->
             lists:all(fun(Element) -> lists:member(Element, Sorted) end, L)
         end).
 
+prop_symmetric() ->
+    ?FORALL(Data, list({atom(), any()}),
+        begin
+            Encoded = encode(Data), is_binary(Encoded) andalso
+            Data =:= decode(Encoded)
+        end).
+
+encode(T) -> term_to_binary(T).
+decode(T) -> binary_to_term(T).
+
