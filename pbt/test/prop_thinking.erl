@@ -1,15 +1,14 @@
 -module(prop_thinking).
 -include_lib("proper/include/proper.hrl").
 
-% Property
+%%%%%%%%%%%%%%%%%
+%%% Property
+%%%%%%%%%%%%%%%%%
 prop_biggest() ->
     ?FORALL(List, non_empty(list(integer())),
         begin
             thinking:biggest(List) =:= model_biggest(List)
         end).
-
-model_biggest(List) ->
-    lists:last(lists:sort(List)).
 
 prop_last() ->
     ?FORALL({List, KnownLast}, {list(number()), number()},
@@ -22,11 +21,6 @@ prop_sort() ->
     ?FORALL(List, list(term()),
         is_ordered(lists:sort(List))
     ).
-
-is_ordered([A,B|T]) ->
-    A =< B andalso is_ordered([B|T]);
-is_ordered(_) -> % 2要素未満のリスト
-    true.
 
 prop_same_size() ->
     ?FORALL(L, list(number()),
@@ -52,6 +46,17 @@ prop_symmetric() ->
             Encoded = encode(Data), is_binary(Encoded) andalso
             Data =:= decode(Encoded)
         end).
+
+%%%%%%%%%%%%%%%%%%%%%
+%%% Generators
+%%%%%%%%%%%%%%%%%%%%%
+model_biggest(List) ->
+    lists:last(lists:sort(List)).
+
+is_ordered([A,B|T]) ->
+    A =< B andalso is_ordered([B|T]);
+is_ordered(_) -> % 2要素未満のリスト
+    true.
 
 encode(T) -> term_to_binary(T).
 decode(T) -> binary_to_term(T).
