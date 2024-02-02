@@ -47,6 +47,12 @@ prop_symmetric() ->
             Data =:= decode(Encoded)
         end).
 
+prop_keysort() ->
+    ?FORALL(L, list({term(), term()}),
+        begin
+            is_key_ordered(lists:keysort(1, L))
+        end).
+
 %%%%%%%%%%%%%%%%%%%%%
 %%% Generators
 %%%%%%%%%%%%%%%%%%%%%
@@ -61,3 +67,7 @@ is_ordered(_) -> % 2要素未満のリスト
 encode(T) -> term_to_binary(T).
 decode(T) -> binary_to_term(T).
 
+is_key_ordered([{A,_},{B,_}=BTuple|T]) ->
+    A =< B andalso is_key_ordered([BTuple|T]);
+is_key_ordered(_) ->
+    true.
