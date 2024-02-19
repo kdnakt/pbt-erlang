@@ -22,7 +22,36 @@ prop_dict_merge() ->
             lists:usort(extract_keys(ListA ++ ListB))
         end).
 
+prop_count_words() ->
+    ?FORALL(String, non_empty(string()),
+        word_count(String) =:= alt_word_count(String)
+    ).
+
 % helper
 
 extract_keys(List) -> [K || {K,_} <- List].
+
+alt_word_count(String) -> space(String).
+
+space([]) -> 0;
+space([$\s|Str]) -> space(Str);
+space(Str) -> word(Str).
+
+word([]) -> 1;
+word([$\s|Str]) -> 1+space(Str);
+word([_|Str]) -> word(Str).
+
+
+% Implementation
+word_count(String) ->
+    Stripped = string:trim(dedupe_spaces(String), both, " "),
+    Spaces = lists:sum([1 || Char <- Stripped, Char =:= $\s]),
+    case Stripped of
+        "" -> 0;
+        _ -> Spaces + 1
+    end.
+
+dedupe_spaces([]) -> [];
+dedupe_spaces([$\s,$\s|Rest]) -> dedupe_spaces([$\s|Rest]);
+dedupe_spaces([H|T]) -> [H|dedupe_spaces(T)].
 
