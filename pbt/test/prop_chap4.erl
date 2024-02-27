@@ -9,7 +9,10 @@ prop_dupes() ->
         begin
             M = maps:from_list(KV),
             [maps:get(K, M) || {K, _V} <- KV], % Kがマップにない場合はクラッシュ
-            true
+            collect(
+                {dupes, to_range(5, length(KV) - length(lists:ukeysort(1,KV)))},
+                true
+            )
         end).
 
 prop_collect1() ->
