@@ -32,6 +32,6 @@ to_range(M, N) ->
 %%%%%%%%%%%%%%%%%%
 %%% Generators %%%
 %%%%%%%%%%%%%%%%%%
-key() -> integer().
+key() -> oneof([range(1,10), integer()]).
 val() -> term().
 
