@@ -22,6 +22,11 @@ prop_collect2() ->
     ?FORALL(Bin, binary(),
         collect(to_range(10, byte_size(Bin)), is_binary(Bin))).
 
+prop_aggregate() ->
+    Suits = [club, diamond, heart, spade],
+    ?FORALL(Hand, vector(5, {oneof(Suits), choose(1, 13)}),
+            aggregate(Hand, true)).
+
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
