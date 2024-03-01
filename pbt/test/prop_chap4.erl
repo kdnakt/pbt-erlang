@@ -31,6 +31,10 @@ prop_escape() ->
     ?FORALL(Str, string(),
             aggregate(classes(Str), escape(Str))).
 
+prop_resize() ->
+    ?FORALL(Bin, resize(150, binary()),
+        collect(to_range(10, byte_size(Bin)), is_binary(Bin))).
+
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
