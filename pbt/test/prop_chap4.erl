@@ -35,6 +35,16 @@ prop_resize() ->
     ?FORALL(Bin, resize(150, binary()),
         collect(to_range(10, byte_size(Bin)), is_binary(Bin))).
 
+prop_profile1() ->
+    ?FORALL(Profile, [{name, resize(10, string())},
+                      {age, pos_integer()},
+                      {bio, resize(350, string())}],
+        begin
+            NameLen = to_range(10,length(proplists:get_value(name, Profile))),
+            BioLen = to_range(300,length(proplists:get_value(bio, Profile))),
+            aggregate([{name, NameLen}, {bio, BioLen}], true)
+        end).
+
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
