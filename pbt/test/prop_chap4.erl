@@ -65,6 +65,13 @@ prop_profile2_min() ->
             aggregate([{name, NameLen}, {bio, BioLen}], true)
         end).
 
+prop_queue_naive() ->
+    ?FORALL(List, list({term(), term()}),
+        begin
+            Queue = queue:from_list(List),
+            queue:is_queue(Queue)
+        end).
+
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
