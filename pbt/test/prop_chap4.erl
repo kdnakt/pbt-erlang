@@ -72,6 +72,11 @@ prop_queue_naive() ->
             queue:is_queue(Queue)
         end).
 
+prop_queue_nicer() ->
+    ?FORALL(Q, queue(),
+        queue:is_queue(Q)).
+
+
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
@@ -105,4 +110,8 @@ punctuation(Str) ->
 %%%%%%%%%%%%%%%%%%
 key() -> oneof([range(1,10), integer()]).
 val() -> term().
+
+queue() ->
+    ?LET(List, list({term(), term()}),
+        queue:from_list(List)).
 
