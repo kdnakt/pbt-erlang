@@ -88,8 +88,16 @@ prop_even1() ->
     ?FORALL({N, M}, {my_even1(), my_even1()},
         (N - M) rem 2 =:= 0).
 
-prop_uneven2() ->
+prop_uneven1() ->
     ?FORALL({N, M}, {my_uneven1(), my_uneven1()},
+        (N - M) rem 2 =:= 0).
+
+prop_even2() ->
+    ?FORALL({N, M}, {my_even2(), my_even2()},
+        (N - M) rem 2 =:= 0).
+
+prop_uneven2() ->
+    ?FORALL({N, M}, {my_uneven2(), my_uneven2()},
         (N - M) rem 2 =:= 0).
 
 %%%%%%%%%%%%%%%
@@ -138,4 +146,7 @@ queue() ->
 
 my_even1() -> ?SUCHTHAT(N, integer(), N rem 2 =:= 0).
 my_uneven1() -> ?SUCHTHAT(N, integer(), N rem 2 =/= 0).
+
+my_even2() -> ?LET(N, integer(), N * 2).
+my_uneven2() -> ?LET(N, integer(), N * 2 + 1).
 
