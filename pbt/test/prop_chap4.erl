@@ -76,6 +76,9 @@ prop_queue_nicer() ->
     ?FORALL(Q, queue(),
         queue:is_queue(Q)).
 
+prop_non_empty_list() ->
+    ?FORALL(List, my_non_empty(list(term())),
+        length(List) =/= 0).
 
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
@@ -104,6 +107,9 @@ numbers(Str) ->
 
 punctuation(Str) ->
     length([1 || Char <- Str, lists:member(Char, ".,;:'\"-")]).
+
+my_non_empty(ListOrBinGenerator) ->
+    ?SUCHTHAT(L, ListOrBinGenerator, L =/= [] andalso L =/= <<>>).
 
 %%%%%%%%%%%%%%%%%%
 %%% Generators %%%
