@@ -84,6 +84,14 @@ prop_non_empty_map() ->
     ?FORALL(Map, my_non_empty_map(map(term(), term())),
         maps:size(Map) =/= 0).
 
+prop_even1() ->
+    ?FORALL({N, M}, {my_even1(), my_even1()},
+        (N - M) rem 2 =:= 0).
+
+prop_uneven2() ->
+    ?FORALL({N, M}, {my_uneven1(), my_uneven1()},
+        (N - M) rem 2 =:= 0).
+
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
@@ -127,4 +135,7 @@ val() -> term().
 queue() ->
     ?LET(List, list({term(), term()}),
         queue:from_list(List)).
+
+my_even1() -> ?SUCHTHAT(N, integer(), N rem 2 =:= 0).
+my_uneven1() -> ?SUCHTHAT(N, integer(), N rem 2 =/= 0).
 
