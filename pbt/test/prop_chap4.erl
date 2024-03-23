@@ -80,6 +80,10 @@ prop_non_empty_list() ->
     ?FORALL(List, my_non_empty(list(term())),
         length(List) =/= 0).
 
+prop_non_empty_map() ->
+    ?FORALL(Map, my_non_empty_map(map(term(), term())),
+        maps:size(Map) =/= 0).
+
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
@@ -110,6 +114,9 @@ punctuation(Str) ->
 
 my_non_empty(ListOrBinGenerator) ->
     ?SUCHTHAT(L, ListOrBinGenerator, L =/= [] andalso L =/= <<>>).
+
+my_non_empty_map(Gen) ->
+    ?SUCHTHAT(G, Gen, G =/= #{}).
 
 %%%%%%%%%%%%%%%%%%
 %%% Generators %%%
