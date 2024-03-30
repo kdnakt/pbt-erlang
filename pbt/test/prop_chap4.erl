@@ -194,7 +194,7 @@ xy_path(_Current, Acc, _Seen, [_,_,_,_]) -> %% 全方向に試行
 xy_path(Current, Acc, Seen, Ignore) ->
     frequency([
         {1, Acc}, % 確率的に停止
-        {15, increase_path(Current, Acc, Seen, Ignore)}
+        {15, ?LAZY(increase_path(Current, Acc, Seen, Ignore))}
     ]).
 
 increase_path(Current, Acc, Seen, Ignore) ->
