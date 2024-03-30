@@ -112,6 +112,10 @@ prop_path() ->
     ?FORALL(Route, path(),
             aggregate(Route, true)).
 
+prop_xy_path() ->
+    ?FORALL(Route, xy_path(),
+            aggregate(Route, true)).
+
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
@@ -182,3 +186,29 @@ sorted_list() ->
     ?LET(L, list(), lists:sort(L)).
 
 path() -> list(oneof([left, right, up, down])).
+
+xy_path() ->
+    xy_path({0,0}, [], #{{0,0} => seen}, []).
+xy_path(_Current, Acc, _Seen, [_,_,_,_]) -> %% 全方向に試行
+    Acc; % 試行を終了
+xy_path(Current, Acc, Seen, Ignore) ->
+    frequency([
+        {1, Acc}, % 確率的に停止
+        {15, increase_path(Current, Acc, Seen, Ignore)}
+    ]).
+
+increase_path(Current, Acc, Seen, Ignore) ->
+    DirectionGen = oneof([left, right, up, down] -- Ignore),
+    ?LET(Direction, DirectionGen,
+      begin
+        NewPos = move(Direction, Current),
+        case Seen of
+            #{NewPos := _} -> % 存在する
+                xy_path(Current, Acc, Seen, [Direction|Ignore]); % 再試行
+            _ -> xy_path(NewPos, [Direction||Acc], Seen#{NewPos => seen}, [])
+        end
+      end).
+move(left, {X,Y}) -> {X-1,Y};
+move(right, {X,Y}) -> {X+1,Y};
+move(up, {X,Y}) -> {X,Y+1};
+move(down, {X,Y}) -> {X,Y-1}.
