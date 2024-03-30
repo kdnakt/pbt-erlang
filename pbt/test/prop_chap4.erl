@@ -108,6 +108,10 @@ prop_mostly_sorted() ->
     ?FORALL(List, non_empty(mostly_sorted()),
         length(List) =/= 0).
 
+prop_path() ->
+    ?FORALL(Route, path(),
+            aggregate(Route, true)).
+
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
@@ -176,3 +180,5 @@ mostly_sorted() ->
 
 sorted_list() ->
     ?LET(L, list(), lists:sort(L)).
+
+path() -> list(oneof([left, right, up, down])).
