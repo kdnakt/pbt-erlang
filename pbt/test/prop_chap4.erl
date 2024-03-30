@@ -104,6 +104,10 @@ prop_text_like() ->
     ?FORALL(Text, text_like(),
         aggregate(classes(Text), escape(Text))).
 
+prop_mostly_sorted() ->
+    ?FORALL(List, non_empty(mostly_sorted()),
+        length(List) =/= 0).
+
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
@@ -161,3 +165,14 @@ text_like() ->
                     {1, oneof([$., $-, $!, $?, $,])},
                     {1, range($0, $9)}
                    ])).
+
+mostly_sorted() ->
+    ?LET(Lists,
+         list(frequency([
+            {5, sorted_list()},
+            {1, list()}
+         ])),
+         lists:append(Lists)).
+
+sorted_list() ->
+    ?LET(L, list(), lists:sort(L)).
