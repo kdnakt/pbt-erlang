@@ -100,6 +100,10 @@ prop_uneven2() ->
     ?FORALL({N, M}, {my_uneven2(), my_uneven2()},
         (N - M) rem 2 =:= 0).
 
+prop_text_like() ->
+    ?FORALL(Text, text_like(),
+        aggregate(classes(Text), escape(Text))).
+
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
@@ -150,3 +154,10 @@ my_uneven1() -> ?SUCHTHAT(N, integer(), N rem 2 =/= 0).
 my_even2() -> ?LET(N, integer(), N * 2).
 my_uneven2() -> ?LET(N, integer(), N * 2 + 1).
 
+text_like() ->
+    list(frequency([{80, range($a, $z)},
+                    {10, $\s},
+                    {1, $\n},
+                    {1, oneof([$., $-, $!, $?, $,])},
+                    {1, range($0, $9)}
+                   ])).
