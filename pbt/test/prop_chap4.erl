@@ -188,24 +188,29 @@ sorted_list() ->
 path() -> list(oneof([left, right, up, down])).
 
 xy_path() ->
-    xy_path({0,0}, [], #{{0,0} => seen}, []).
-xy_path(_Current, Acc, _Seen, [_,_,_,_]) -> %% 全方向に試行
+    ?SIZED(Size,
+        xy_path(Size, {0,0}, [], #{{0,0} => seen}, [])).
+xy_path(0, _Current, Acc, _Seen, [_,_,_,_]) -> %% 方向制限
+    Acc; % 最大深さに到達
+xy_path(_Max, _Current, Acc, _Seen, [_,_,_,_]) -> %% 全方向に試行
     Acc; % 試行を終了
-xy_path(Current, Acc, Seen, Ignore) ->
-    frequency([
-        {1, Acc}, % 確率的に停止
-        {15, ?LAZY(increase_path(Current, Acc, Seen, Ignore))}
-    ]).
 
-increase_path(Current, Acc, Seen, Ignore) ->
+xy_path(Max, Current, Acc, Seen, Ignore) ->
+    increase_path(Max, Current, Acc, Seen, Ignore).
+    % frequency([
+    %     {1, Acc}, % 確率的に停止
+    %     {15, ?LAZY(increase_path(Current, Acc, Seen, Ignore))}
+    % ]).
+
+increase_path(Max, Current, Acc, Seen, Ignore) ->
     DirectionGen = oneof([left, right, up, down] -- Ignore),
     ?LET(Direction, DirectionGen,
       begin
         NewPos = move(Direction, Current),
         case Seen of
             #{NewPos := _} -> % 存在する
-                xy_path(Current, Acc, Seen, [Direction|Ignore]); % 再試行
-            _ -> xy_path(NewPos, [Direction||Acc], Seen#{NewPos => seen}, [])
+                xy_path(Max, Current, Acc, Seen, [Direction|Ignore]); % 再試行
+            _ -> xy_path(Max-1, NewPos, [Direction||Acc], Seen#{NewPos => seen}, [])
         end
       end).
 move(left, {X,Y}) -> {X-1,Y};
