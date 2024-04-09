@@ -125,6 +125,13 @@ prop_dict_symb() ->
 prop_dict_autosymb() ->
     ?FORALL(D, dict_autosymb(), dict:size(D) < 5).
 
+prop_tree() ->
+    ?FORALL(Tree, tree(),
+            aggregate(Tree, true)).
+
+prop_limited_tree() ->
+    ?FORALL(Tree, limited_tree(),
+            aggregate(Tree, true)).
 
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
@@ -247,3 +254,25 @@ dict_autosymb(0, Dict) ->
 dict_autosymb(N, Dict) ->
     dict_autosymb(N-1, {'$call', dict, store, [integer(), integer(), Dict]}).
 
+tree() -> tree(term()).
+tree(Type) ->
+    frequency([
+        {3, {node, Type, undefined, undefined}},
+        {2, {node, Type, ?LAZY(tree(Type)), undefined}},
+        {2, {node, Type, undefined, ?LAZY(tree(Type))}},
+        {3, {node, Type, ?LAZY(tree(Type)), ?LAZY(tree(Type))}}
+    ]).
+
+limited_tree() -> limited_tree(term()).
+limited_tree(Type) ->
+    ?SIZED(Size, limited_tree(Size, Type)).
+limited_tree(Size, Type) when Size =< 1 ->
+    {node, Type, undefined, undefined};
+limited_tree(Size, Type) ->
+    frequency([
+        {1, {node, Type, ?LAZY(limited_tree(Size-1, Type)), undefined}},
+        {1, {node, Type, undefined, ?LAZY(limited_tree(Size-1, Type))}},
+        {5, {node, Type,
+            ?LAZY(limited_tree(Size div 2, Type)),
+            ?LAZY(limited_tree(Size div 2, Type))}}
+    ]).
