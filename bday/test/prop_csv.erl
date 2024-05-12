@@ -1,3 +1,9 @@
+-module(prop_csv).
+-include_lib("proper/include/proper.hrl").
+
+prop_roundtrip() ->
+    ?FORALL(Maps, csv_source(),
+        Maps =:= bday_csv:decode(bday_csv:encode(Maps))).
 
 csv_source() ->
     ?LET(Size, pos_integer(),
