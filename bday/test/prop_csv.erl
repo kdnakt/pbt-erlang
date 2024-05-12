@@ -1,4 +1,9 @@
 
+header(Size) -> vector(Size, name()).
+
+record(Size) -> vector(Size, field()).
+
+name() -> field().
 
 field() -> oneof([unquoted_text(), quotable_text()]).
 
