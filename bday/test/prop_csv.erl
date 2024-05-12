@@ -1,4 +1,13 @@
 
+csv_source() ->
+    ?LET(Size, pos_integer(),
+        ?LET(Keys, header(Size),
+             list(entry(Size, Keys)))).
+
+entry(Size, Keys) ->
+    ?LET(Vals, record(Size),
+        maps:from_list(lists:zip(Keys, Vals))).
+
 header(Size) -> vector(Size, name()).
 
 record(Size) -> vector(Size, field()).
