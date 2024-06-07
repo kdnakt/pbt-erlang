@@ -1,5 +1,7 @@
 -module(prop_csv).
 -include_lib("proper/include/proper.hrl").
+-include_lib("eunit/include/eunit.hrl").
+-compile(export_all).
 
 prop_roundtrip() ->
     ?FORALL(Maps, csv_source(),
@@ -7,8 +9,8 @@ prop_roundtrip() ->
 
 csv_source() ->
     ?LET(Size, pos_integer(),
-        ?LET(Keys, header(Size),
-             list(entry(Size, Keys)))).
+        ?LET(Keys, header(Size+1),
+             list(entry(Size+1, Keys)))).
 
 entry(Size, Keys) ->
     ?LET(Vals, record(Size),
@@ -30,3 +32,9 @@ textdata() ->
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
     ":;<=>?@ !#$%&'()*+-./[\\]fi_`{|}~".
 
+%%% EUnit
+
+%% @doc for the ambiguity of RFC 4180
+one_column_bug_test() ->
+    ?assertEqual("\r\n\r\n", bday_csv:encode([#{""=>""},#{""=>""}])),
+    ?assertEqual([#{""=>""}], bdat_csv:decode("\r\n\r\n")).
