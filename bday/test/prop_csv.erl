@@ -38,3 +38,25 @@ textdata() ->
 one_column_bug_test() ->
     ?assertEqual("\r\n\r\n", bday_csv:encode([#{""=>""},#{""=>""}])),
     ?assertEqual([#{""=>""}], bdat_csv:decode("\r\n\r\n")).
+
+rfc_record_per_line_test() ->
+    ?assertEqual([#{"aaa" => "zzz", "bbb" => "yyy", "ccc" => "xxx"}],
+                 bday_csv:decode("aaa,bbb,ccc\r\nzzz,yyy,xxx\r\n")).
+
+rfc_optional_trailing_crlf_test() ->
+    ?assertEqual([#{"aaa" => "zzz", "bbb" => "yyy", "ccc" => "xxx"}],
+                 bday_csv:decode("aaa,bbb,ccc\r\nzzz,yyy,xxx")).
+
+rfc_double_quote_test() ->
+    ?assertEqual([#{"aaa" => "zzz", "bbb" => "yyy", "ccc" => "xxx"}],
+                 bday_csv:decode("\"aaa\",\"bbb\",\"ccc\"\r\nzzz,yyy,xxx")).
+
+rfc_crlf_escape_test() ->
+    ?assertEqual([#{"aaa" => "zzz", "b\r\nbb" => "yyy", "ccc" => "xxx"}],
+                 bday_csv:decode("\"aaa\",\"b\r\nbb\",\"ccc\"\r\nzzz,yyy,xxx")).
+
+rfc_double_quote_escape_test() ->
+    ?assertEqual([#{"aaa" => "", "b\"bb" => "", "ccc" => ""}],
+                 bday_csv:decode("\"aaa\",\"b\"\"bb\",\"ccc\"\r\n,,")).
+
+
