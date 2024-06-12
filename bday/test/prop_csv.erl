@@ -59,4 +59,12 @@ rfc_double_quote_escape_test() ->
     ?assertEqual([#{"aaa" => "", "b\"bb" => "", "ccc" => ""}],
                  bday_csv:decode("\"aaa\",\"b\"\"bb\",\"ccc\"\r\n,,")).
 
-
+dupe_keys_unsupported_test() ->
+    CSV = "field_name,field_name,field_name\r\n"
+          "aaa,bbb,ccc\r\n"
+          "zzz,yyy,xxx\r\n",
+    [Map1,Map2] = bday_csv:decode(CSV),
+    ?assertEqual(1, length(maps:keys(Map1))),
+    ?assertEqual(1, length(maps:keys(Map2))),
+    ?assertMatch(#{"field_name" := _}, Map1),
+    ?assertMatch(#{"field_name" := _}, Map2).
