@@ -2,7 +2,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 
-bdat_filter_test() ->
+bday_filter_test() ->
     Years = generate_years_data(2018,2038),
     People = generate_people_for_year(3),
     lists:foreach(fun(YearData) -> 
@@ -11,8 +11,8 @@ bdat_filter_test() ->
         on_right_date(People, Birthdays)
     end, Years).
 
-first_birthdays_for_year(_, []) -> [];
-first_birthdays_for_year(People, [Day|Year]) ->
+find_birthdays_for_year(_, []) -> [];
+find_birthdays_for_year(People, [Day|Year]) ->
     Found = bday_filter:birthday(People, Day),
     [{Day, Found} | find_birthdays_for_year(People, Year)].
 
