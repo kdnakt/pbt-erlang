@@ -17,6 +17,19 @@ find_birthdays_for_year(People, [Day|Year]) ->
     [{Day, Found} | find_birthdays_for_year(People, Year)].
 
 
+%% Assertions
+every_birthday_once(People, Birthdays) ->
+    Found = lists:sort(lists:append([Found || {_, Found} <- Birthdays])),
+    NotFound = People -- Found,
+    FoundManyTimes = Found -- lists:usort(Found),
+    ?assertEqual([], NotFound),
+    ?assertEqual([], FoundManyTimes).
+
+on_right_date(_People, Birthdays) ->
+    [?assertEqual({M,D}, {PM,PD})
+     || {{Y,M,D}, Found} <- Birthdays,
+        #{"date_of_birth" := {_,PM,PD}} <- Found].
+
 %% Generators
 generate_years_data(End, End) -> [];
 generate_years_data(Start, End) ->
