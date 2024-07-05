@@ -34,3 +34,16 @@ generate_year_data(Year) ->
 
 month(Y,M,1) -> [{Y,M,1}];
 month(Y,M,N) -> [{Y,M,N} | month(Y,M,N-1)].
+
+generate_people_for_year(N) ->
+    YearSeed = generate_year_data(2016),
+    lists:append([people_for_year(YearSeed) || _ <- lists:seq(1,N)]).
+
+people_for_year(Year) ->
+    [person_for_date(Date) || Date <- Year].
+
+person_for_date({_, M, D}) ->
+    #{"name" => make_ref(),
+      "date_of_birth" => {rand:uniform(100)+1900,M,D}}.
+
+
