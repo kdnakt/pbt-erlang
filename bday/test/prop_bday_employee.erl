@@ -19,6 +19,7 @@ raw_employee_map() ->
          {" first_name", whitespaced_text()},
          {" date_of_birth", text_date()},
          {" email", whitespaced_text()}].
+        maps:from_list(PropList)).
 
 whitespaced_text() ->
     ?LET(Txt, prop_csv:field(), " " ++ Txt).
