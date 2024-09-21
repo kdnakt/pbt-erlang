@@ -8,7 +8,7 @@ prop_fix_csv_leading_space() ->
         begin
             Emp = bday_employee:adapt_csv_result(Map),
             Strs = [X || X <- maps:keys(Emp) ++ maps:values(Emp), is_list(X)],
-            lists:all(fun(STring) -> hd(String) =/= $\s end, Strs)
+            lists:all(fun(String) -> hd(String) =/= $\s end, Strs)
         end).
 
 % Generator
@@ -18,7 +18,7 @@ raw_employee_map() ->
         [{"last_name", prop_csv:field()},
          {" first_name", whitespaced_text()},
          {" date_of_birth", text_date()},
-         {" email", whitespaced_text()}].
+         {" email", whitespaced_text()}],
         maps:from_list(PropList)).
 
 whitespaced_text() ->
