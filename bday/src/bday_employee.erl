@@ -15,3 +15,10 @@
 from_csv(String) ->
     {raw, [adapt_csv_result(Map) || Map <- bday_csv:decode(String)]}.
 
+-spec adapt_csv_result(map()) -> employee().
+adapt_csv_result(Map) ->
+    maps:fold(fun(K,V,NewMap) -> NewMap#{trim(K) => trim(V)} end,
+              #{}, Map).
+
+trim(Str) -> string:trim(Str, leading, " ").
+
