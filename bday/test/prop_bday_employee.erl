@@ -11,6 +11,15 @@ prop_fix_csv_leading_space() ->
             lists:all(fun(String) -> hd(String) =/= $\s end, Strs)
         end).
 
+prop_fix_csv_date_of_birth() ->
+    ?FORALL(Map, raw_employee_map(),
+        case bday_employee:adapt_csv_result(Map) of
+            #{"date_of_birth" := {Y,M,D}} ->
+                is_integer(Y) and is_integer(M) and is_integer(D);
+            _ ->
+                false
+        end).
+
 % Generator
 
 raw_employee_map() ->
