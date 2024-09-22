@@ -9,6 +9,8 @@
 -opaque employee() :: #{string() := term()}.
 -opaque handle() :: {raw, [employee()]}.
 -export_type([handle/0, employee/0]).
+-export([from_csv/1, last_name/1, first_name/1, date_of_birth/1, email/1]).
+-export([fetch/1]).
 
 -spec from_csv(string()) -> handle().
 
@@ -30,4 +32,23 @@ maybe_null(Str) -> Str.
 parse_date(Str) ->
     [Y,M,D] = [list_to_integer(X) || X <- string:lexemes(Str, "/")],
     {Y,M,D}.
+
+-spec filter_birthday(handle(), calendar:date()) -> handle().
+filter_birthday({raw, Employees}, Date) ->
+    {raw, bday_filter:birthday(Employees, Date)}.
+
+-spec fetch(handle()) -> [employee()].
+fetch({raw, Maps}) -> Maps.
+
+-spec last_name(employee()) -> string() | undefined.
+last_name(#{"last_name" := Name}) -> Name.
+
+-spec first_name(employee()) -> string() | undefined.
+first_name(#{"first_name" := Name}) -> Name.
+
+-spec date_of_birth(employee()) -> string() | undefined.
+date_of_birth(#{"date_of_birth" := Name}) -> Name.
+
+-spec email(employee()) -> string() | undefined.
+email(#{"email" := Name}) -> Name.
 
