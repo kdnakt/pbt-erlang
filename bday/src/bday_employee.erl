@@ -17,10 +17,17 @@ from_csv(String) ->
 
 -spec adapt_csv_result(map()) -> employee().
 adapt_csv_result(Map) ->
-    maps:fold(fun(K,V,NewMap) -> NewMap#{trim(K) => maybe_null(trim(V))} end,
-              #{}, Map).
+    NewMap = maps:fold(fun(K,V,NewMap) -> NewMap#{trim(K) => maybe_null(trim(V))} end,
+              #{}, Map),
+    DoB = maps:get("date_of_birth", NewMap),
+    NewMap#{"date_of_birth" => parse_date(DoB)}.
 
 trim(Str) -> string:trim(Str, leading, " ").
 
 maybe_null("") -> undefined;
 maybe_null(Str) -> Str.
+
+parse_date(Str) ->
+    [Y,M,D] = [list_to_integer(X) || X <- string:lexemes(Str, "/")],
+    {Y,M,D}.
+
