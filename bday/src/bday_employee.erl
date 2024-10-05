@@ -46,9 +46,9 @@ last_name(#{"last_name" := Name}) -> Name.
 -spec first_name(employee()) -> string() | undefined.
 first_name(#{"first_name" := Name}) -> Name.
 
--spec date_of_birth(employee()) -> string() | undefined.
-date_of_birth(#{"date_of_birth" := Name}) -> Name.
+-spec date_of_birth(employee()) -> calebdar:date().
+date_of_birth(#{"date_of_birth" := DoB}) -> DoB.
 
--spec email(employee()) -> string() | undefined.
-email(#{"email" := Name}) -> Name.
+-spec email(employee()) -> string().
+email(#{"email" := Email}) -> Email.
 
