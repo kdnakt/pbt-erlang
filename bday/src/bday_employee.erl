@@ -11,6 +11,7 @@
 -export_type([handle/0, employee/0]).
 -export([from_csv/1, last_name/1, first_name/1, date_of_birth/1, email/1]).
 -export([fetch/1]).
+-export([filter_birthday/2]).
 
 -spec from_csv(string()) -> handle().
 
