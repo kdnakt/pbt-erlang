@@ -14,6 +14,10 @@ prop_no_special2() ->
                 ExpectedPrice =:= checkout:total(ItemList, PriceList, [])
             )).
 
+prop_special() ->
+    ?FORALL({ItemList, ExpectedPrice, PriceList, SpecialList}, item_price_special(),
+        ExpectedPrice =:= checkout:total(ItemList, PriceList, SpecialList)).
+
 % Generator
 item_price_list() ->
     ?LET(PriceList, price_list(),
@@ -34,3 +38,19 @@ item_list(N, PriceList, {ItemAcc, PriceAcc}) ->
 
 bucket(N, Unit) ->
     (N div Unit) * Unit.
+
+item_price_special() ->
+    ?LET(PriceList, price_list(),
+        ?LET(SpecialList, special_list(PriceList),
+            ?LET({{RegularItems, RegularExpected},
+                  {SpecialItems, SpecialExpected}},
+                  {regular_gen(PriceList, SpecialList),
+                   special_gen(PriceList, SpecialList)},
+                   % merge initial list
+                  {shuffle(RegularItems ++ SpecialItems),
+                    RegularExpected + SpecialExpected,
+                    PriceList, SpecialList}))).
+
+shuffle(L) ->
+    Shuffled = lists:sort([{rand:uniform(), X} || X <- L]),
+    [X || {_, X} <- Shuffled].
