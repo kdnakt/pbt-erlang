@@ -51,6 +51,35 @@ item_price_special() ->
                     RegularExpected + SpecialExpected,
                     PriceList, SpecialList}))).
 
+special_list(PriceList) ->
+    Items = [Name || {Name, _} <- PriceList],
+    ?LET(Specials, list({elements(Items), choose(2, 5), integer()}),
+            lists:ukeysort(1, Specials)).
+
+regular_gen(PriceList, SpecialList) ->
+    regular_gen(PriceList, SpecialList, [], 0).
+regular_gen([], _, Items, Price) ->
+    {Items, Price};
+regular_gen([{Item, Cost}|PriceList], SpecialList, Items, Price) ->
+    CountGen = case lists:keyfind(Item, 1, SpecialList) of
+        {_, Limit, _} -> choose(0, Limit-1);
+        _ -> non_neg_integer()
+    end,
+    ?LET(Count, CountGen,
+         regular_gen(PriceList, SpecialList,
+                    ?LET(V, vector(Count, Item), V ++ Items),
+                    Cost*Count + Price)).
+
+special_gen(_, SpecialList) ->
+    special_gen(SpecialList, [], 0).
+special_gen([], Items, Price) ->
+    {Items, Price};
+special_gen([{Item, Count, Cost} | SpecialList], Items, Price) ->
+    ?LET(Multiplier, non_neg_integer(),
+        special_gen(SpecialList,
+                    ?LET(V, vector(Count * Multiplier, Item), V ++ Items),
+                    Cost * Multiplier + Price)).
+
 shuffle(L) ->
     Shuffled = lists:sort([{rand:uniform(), X} || X <- L]),
     [X || {_, X} <- Shuffled].
