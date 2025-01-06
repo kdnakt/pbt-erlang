@@ -18,6 +18,15 @@ prop_special() ->
     ?FORALL({ItemList, ExpectedPrice, PriceList, SpecialList}, item_price_special(),
         ExpectedPrice =:= checkout:total(ItemList, PriceList, SpecialList)).
 
+prop_expected_result() ->
+    ?FORALL({ItemList, PriceList, SpecialList}, lax_lists(),
+        try checkout:total(ItemList, PriceList, SpecialList) of
+            N when is_integer(N) -> true
+        catch
+            error:{unknown_item, _} -> true;
+            _:_ -> false
+        end).
+
 % Generator
 item_price_list() ->
     ?LET(PriceList, price_list(),
@@ -83,3 +92,8 @@ special_gen([{Item, Count, Cost} | SpecialList], Items, Price) ->
 shuffle(L) ->
     Shuffled = lists:sort([{rand:uniform(), X} || X <- L]),
     [X || {_, X} <- Shuffled].
+
+lax_lists() ->
+    {list(string()), % ItemList
+     list({string(), integer()}), % PriceList
+     list({string(), integer(), integer()})}. % SpecialList

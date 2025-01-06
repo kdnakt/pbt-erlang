@@ -35,5 +35,11 @@ apply_specials(Items, Specials) ->
 
 -spec apply_regular([{item(), integer()}], [{item(), price()}]) -> price().
 apply_regular(Items, PriceList) ->
-    lists:sum([Count * proplists:get_value(Name, PriceList)
+    lists:sum([Count * cost_of_item(Name, PriceList)
         || {Name, Count} <- Items]).
+
+cost_of_item(Name, PriceList) ->
+    case proplists:get_value(Name, PriceList) of
+        undefined -> error({unknown_item, Name});
+        Price -> Price
+    end.
