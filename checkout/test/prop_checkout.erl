@@ -20,12 +20,14 @@ prop_special() ->
 
 prop_expected_result() ->
     ?FORALL({ItemList, PriceList, SpecialList}, lax_lists(),
-        try checkout:total(ItemList, PriceList, SpecialList) of
-            N when is_integer(N) -> true
-        catch
-            error:{unknown_item, _} -> true;
-            _:_ -> false
-        end).
+        collect(
+          item_list_type(ItemList, PriceList),
+          try checkout:total(ItemList, PriceList, SpecialList) of
+              N when is_integer(N) -> true
+          catch
+              error:{unknown_item, _} -> true;
+              _:_ -> false
+          end)).
 
 % Generator
 item_price_list() ->
@@ -97,3 +99,12 @@ lax_lists() ->
     {list(string()), % ItemList
      list({string(), integer()}), % PriceList
      list({string(), integer(), integer()})}. % SpecialList
+
+item_list_type(Items, Prices) ->
+    case lists:all(fun(X) -> has_price(X, Prices) end, Items) of
+        true -> valid;
+        false -> prices_missing
+    end.
+
+has_price(Item, ItemList) ->
+    proplists:get_value(Item, ItemList) =/= undefined.
