@@ -26,6 +26,7 @@ prop_expected_result() ->
               N when is_integer(N) -> true
           catch
               error:{unknown_item, _} -> true;
+              error:invalid_special_list -> true;
               _:_ -> false
           end)).
 
@@ -96,9 +97,11 @@ shuffle(L) ->
     [X || {_, X} <- Shuffled].
 
 lax_lists() ->
-    {list(string()), % ItemList
-     list({string(), integer()}), % PriceList
-     list({string(), integer(), integer()})}. % SpecialList
+    KnownItems = ["A", "B", "C"],
+    MaybeKnownItemGen = elements(KnownItems ++ [string()]),
+    {list(MaybeKnownItemGen), % ItemList
+     list({MaybeKnownItemGen, integer()}), % PriceList
+     list({MaybeKnownItemGen, integer(), integer()})}. % SpecialList
 
 item_list_type(Items, Prices) ->
     case lists:all(fun(X) -> has_price(X, Prices) end, Items) of

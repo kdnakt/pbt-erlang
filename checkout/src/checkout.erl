@@ -1,13 +1,18 @@
 -module(checkout).
 
--export([total/3]).
+-export([valid_special_list/1, total/3]).
 
 -type item() :: string().
 -type price() :: integer().
 -type special() :: {item(), pos_integer(), price()}.
 
+-spec valid_special_list([special()]) -> boolean().
+valid_special_list(List) ->
+    lists:all(fun({_,X,_}) -> X =/= 0 end, List).
+
 -spec total([item()], [{item(), price()}], [special()]) -> price().
 total(ItemList, PriceList, Specials) ->
+    valid_special_list(Specials) orelse error(invalid_special_list),
     Counts = count_seen(ItemList),
     {CountsLeft, Prices} = apply_specials(Counts, Specials),
     Prices + apply_regular(CountsLeft, PriceList).
