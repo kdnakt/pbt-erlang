@@ -16,6 +16,7 @@ valid_special_list(List) ->
 
 -spec total([item()], [{item(), price()}], [special()]) -> price().
 total(ItemList, PriceList, Specials) ->
+    valid_price_list(PriceList) orelse error(invalid_price_list),
     valid_special_list(Specials) orelse error(invalid_special_list),
     Counts = count_seen(ItemList),
     {CountsLeft, Prices} = apply_specials(Counts, Specials),

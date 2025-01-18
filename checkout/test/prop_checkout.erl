@@ -26,6 +26,7 @@ prop_expected_result() ->
               N when is_integer(N) -> true
           catch
               error:{unknown_item, _} -> true;
+              error:invalid_price_list -> true;
               error:invalid_special_list -> true;
               _:_ -> false
           end)).
