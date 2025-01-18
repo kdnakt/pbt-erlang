@@ -12,7 +12,8 @@ valid_price_list(List) ->
 
 -spec valid_special_list([special()]) -> boolean().
 valid_special_list(List) ->
-    lists:all(fun({_,X,_}) -> X =/= 0 end, List).
+    lists:all(fun({_,X,_}) -> X =/= 0 end, List) andalso
+    length(List) =:= length(lists:ukeysort(1, List)).
 
 -spec total([item()], [{item(), price()}], [special()]) -> price().
 total(ItemList, PriceList, Specials) ->

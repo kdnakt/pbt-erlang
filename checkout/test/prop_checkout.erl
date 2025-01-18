@@ -35,6 +35,10 @@ prop_dupe_list_invalid() ->
     ?FORALL(PriceList, dupe_list(),
         false =:= checkout:valid_price_list(PriceList)).
 
+prop_dupe_specials_invalid() ->
+    ?FORALL(SpecialList, dupe_special_list(),
+        false =:= checkout:valid_special_list(SpecialList)).
+
 % Generator
 item_price_list() ->
     ?LET(PriceList, price_list(),
@@ -120,3 +124,7 @@ has_price(Item, ItemList) ->
 dupe_list() ->
     ?LET(Items, non_empty(list(string())),
         vector(length(Items)+1, {elements(Items), integer()})).
+
+dupe_special_list() ->
+    ?LET(Items, non_empty(list(string())),
+        vector(length(Items)+1, {elements(Items), integer(), integer()})).
