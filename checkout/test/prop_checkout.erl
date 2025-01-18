@@ -30,6 +30,10 @@ prop_expected_result() ->
               _:_ -> false
           end)).
 
+prop_dupe_list_invalid() ->
+    ?FORALL(PriceList, dupe_list(),
+        false =:= checkout:valid_price_list(PriceList)).
+
 % Generator
 item_price_list() ->
     ?LET(PriceList, price_list(),
@@ -111,3 +115,7 @@ item_list_type(Items, Prices) ->
 
 has_price(Item, ItemList) ->
     proplists:get_value(Item, ItemList) =/= undefined.
+
+dupe_list() ->
+    ?LET(Items, non_empty(list(string())),
+        vector(length(Items)+1, {elements(Items), integer()})).

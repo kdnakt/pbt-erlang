@@ -1,10 +1,14 @@
 -module(checkout).
 
--export([valid_special_list/1, total/3]).
+-export([valid_price_list/1, valid_special_list/1, total/3]).
 
 -type item() :: string().
 -type price() :: integer().
 -type special() :: {item(), pos_integer(), price()}.
+
+-spec valid_price_list([{item(), price()}]) -> boolean().
+valid_price_list(List) ->
+    length(List) =:= length(lists:ukeysort(1, List)).
 
 -spec valid_special_list([special()]) -> boolean().
 valid_special_list(List) ->
