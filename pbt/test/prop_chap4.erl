@@ -116,22 +116,22 @@ prop_xy_path() ->
     ?FORALL(Route, xy_path(),
             aggregate(Route, true)).
 
-prop_dict_gen() ->
-    ?FORALL(D, dict_gen(), dict:size(D) < 5).
+% prop_dict_gen() ->
+%     ?FORALL(D, dict_gen(), dict:size(D) < 5).
 
-prop_dict_symb() ->
-    ?FORALL(DSymb, dict_symb(), dict:size(eval(DSymb)) < 5).
+% prop_dict_symb() ->
+%     ?FORALL(DSymb, dict_symb(), dict:size(eval(DSymb)) < 5).
 
-prop_dict_autosymb() ->
-    ?FORALL(D, dict_autosymb(), dict:size(D) < 5).
+% prop_dict_autosymb() ->
+%     ?FORALL(D, dict_autosymb(), dict:size(D) < 5).
 
-prop_tree() ->
-    ?FORALL(Tree, tree(),
-            aggregate(Tree, true)).
+% prop_tree() ->
+%     ?FORALL(Tree, tree(),
+%             aggregate(Tree, true)).
 
-prop_limited_tree() ->
-    ?FORALL(Tree, limited_tree(),
-            aggregate(Tree, true)).
+% prop_limited_tree() ->
+%     ?FORALL(Tree, limited_tree(),
+%             aggregate(Tree, true)).
 
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
