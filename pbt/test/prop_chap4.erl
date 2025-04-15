@@ -120,7 +120,7 @@ prop_dict_gen() ->
     ?FORALL(D, dict_gen(), dict:size(D) < 5).
 
 prop_dict_symb() ->
-    ?FORALL(DSymb, dict_symb(), dict:dize(eval(DSymb)) < 5).
+    ?FORALL(DSymb, dict_symb(), dict:size(eval(DSymb)) < 5).
 
 prop_dict_autosymb() ->
     ?FORALL(D, dict_autosymb(), dict:size(D) < 5).
