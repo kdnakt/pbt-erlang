@@ -46,3 +46,23 @@ tree_shrink(N) ->
     PerBranch = N div 2,
     ?LETSHRINK([L, R], [tree_shrink(PerBranch), tree_shrink(PerBranch)],
                {branch, L, R}).
+
+prop_too_much_dairy() ->
+    ?FORALL(Food, meal(), dairy_count(Food) =:= 0).
+
+dairy_count(L) ->
+    length([X || X <- L, is_dairy(X)]).
+is_dairy(cheesestickes) -> true;
+is_dairy(lasagna) -> true;
+is_dairy(icecream) -> true;
+is_dairy(milk) -> true;
+is_dairy(_) -> false.
+
+meal() ->
+    ?LETSHRINK([Appetizer, Drink, Entree, Dessert],
+               [elements([soup, salad, cheesestickes]),
+                elements([water, soda, milk]),
+                elements([lasagna, steak, tofu]),
+                elements([icecream, pie, cake])],
+                [Appetizer, Drink, Entree, Dessert]).
+
