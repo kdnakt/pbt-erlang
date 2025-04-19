@@ -60,9 +60,9 @@ is_dairy(_) -> false.
 
 meal() ->
     ?LETSHRINK([Appetizer, Drink, Entree, Dessert],
-               [elements([soup, salad, cheesestickes]),
-                elements([water, soda, milk]),
-                elements([lasagna, steak, tofu]),
-                elements([icecream, pie, cake])],
-                [Appetizer, Drink, Entree, Dessert]).
+               [[elements([soup, salad, cheesestickes])],
+                [elements([water, soda, milk])],
+                [elements([lasagna, steak, tofu])],
+                [elements([icecream, pie, cake])]],
+                Appetizer ++ Drink ++ Entree ++ Dessert).
 
