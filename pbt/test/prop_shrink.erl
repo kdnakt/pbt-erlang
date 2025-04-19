@@ -39,3 +39,10 @@ tree(N) when N =< 1 ->
 tree(N) ->
     PerBranch = N div 2,
     { branch, [tree(PerBranch), tree(PerBranch)]}.
+
+tree_shrink(N) when N =< 1 ->
+    {leaf, number()};
+tree_shrink(N) ->
+    PerBranch = N div 2,
+    ?LETSHRINK([L, R], [tree_shrink(PerBranch), tree_shrink(PerBranch)],
+               {branch, L, R}).
