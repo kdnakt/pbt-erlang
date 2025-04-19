@@ -32,3 +32,10 @@ timezone() ->
 to_str({{Y,M,D}, {H,Mi,S}, {Sign,Ho,Mo}}) ->
     FormatStr = "~4..0b-~2..0b-~2..0bT~2..0b:~2..0b:~2..0b~s~2..0b:~2..0b",
     lists:flatten(io_lib:format(FormatStr, [Y,M,D,H,Mi,S,Sign,Ho,Mo])).
+
+tree(N) when N =< 1 ->
+    {leaf, number()};
+
+tree(N) ->
+    PerBranch = N div 2,
+    { branch, [tree(PerBranch), tree(PerBranch)]}.
