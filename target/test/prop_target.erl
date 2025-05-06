@@ -1,21 +1,28 @@
 -module(prop_target).
 -include_lib("proper/include/proper.hrl").
+-compile(export_all).
+
 
 %%%%%%%%%%%%%%%%%%
 %%% Properties %%%
 %%%%%%%%%%%%%%%%%%
-prop_test() ->
-    ?FORALL(Type, mytype(),
+prop_path() ->
+    ?FORALL_TARGETED(P, path(),
         begin
-            boolean(Type)
+            {X,Y} = lists:foldl(fun move/2, {0,0}, P),
+            io:format("~p",[{X,Y}]),
+            true
         end).
 
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
-boolean(_) -> true.
+path() -> list(oneof([left, right, up, down])).
 
 %%%%%%%%%%%%%%%%%%
 %%% Generators %%%
 %%%%%%%%%%%%%%%%%%
-mytype() -> term().
+move(left, {X,Y}) -> {X-1,Y};
+move(right, {X,Y}) -> {X+1,Y};
+move(up, {X,Y}) -> {X,Y+1};
+move(down, {X,Y}) -> {X,Y-1}.
