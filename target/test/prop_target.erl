@@ -28,3 +28,19 @@ move(left, {X,Y}) -> {X-1,Y};
 move(right, {X,Y}) -> {X+1,Y};
 move(up, {X,Y}) -> {X,Y+1};
 move(down, {X,Y}) -> {X,Y-1}.
+
+to_tree(L) ->
+    lists:foldl(fun insert/2, undefined, L).
+
+insert(N, {node, N, L, R}) -> {node, N, L, R};
+insert(N, {node, M, L, R}) when N < M ->
+    {node, M, insert(N, L), R};
+insert(N, {node, M, L, R}) when N > M ->
+    {node, M, L, insert(N, R)};
+insert(N, {leaf, N}) -> {leaf, N};
+insert(N, {leaf, M}) when N < M ->
+    {node, N, undefined, {leaf, M}};
+insert(N, {leaf, M}) when N > M ->
+    {node, N, {leaf, M}, undefined};
+insert(N, undefined) -> 
+    {leaf, N}.
