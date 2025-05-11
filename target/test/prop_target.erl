@@ -18,10 +18,19 @@ prop_path() ->
 
 prop_tree_regular(opts) -> [{numtests, 1000}].
 prop_tree_regular() ->
-    ?FORALL_TARGETED(T, tree(),
+    ?FORALL(T, tree(),
         begin
             Weight = sides(T),
             io:format(" ~p", [Weight]),
+            true
+        end).
+
+prop_tree() ->
+    ?FORALL_TARGETED(T, tree(),
+        begin
+            {Left, Right} = Weight = sides(T),
+            io:format(" ~p", [Weight]),
+            ?MAXIMIZE(Left-Right),
             true
         end).
 
