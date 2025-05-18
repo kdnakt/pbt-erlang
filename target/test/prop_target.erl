@@ -39,6 +39,15 @@ prop_example() ->
     ?FORALL_TARGETED(Var, ?USERNF(list(integer()), next_list()),
         some_check(Var)).
 
+prop_tree_neighbor() ->
+    ?FORALL_TARGETED(T, ?USERNF(tree(), next_tree()),
+        begin
+            {Left, Right} = Weight = sides(T),
+            io:format(" ~p", [Weight]),
+            ?MAXIMIZE(Left-Right),
+            true
+        end).
+
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
@@ -46,6 +55,11 @@ path() -> list(oneof([left, right, up, down])).
 
 tree() -> 
     ?LET(L, non_empty(list(integer())), to_tree(L)).
+
+next_tree() ->
+    fun(OldTree, {_, T}) ->
+        ?LET(N, integer(), insert(trunc(N*T*100), OldTree))
+    end.
 
 %%%%%%%%%%%%%%%%%%
 %%% Generators %%%
