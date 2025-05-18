@@ -61,6 +61,36 @@ prop_tree_search() ->
                 false % NOT_EXISTSがパスしないように。
             end)).
 
+prop_quicksort_time_regular(opts) -> [{numtests, 1000}].
+prop_quicksort_time_regular() ->
+    ?FORALL(L, ?SUCHTHAT(L, list(integer()), length(L) < 100000),
+        begin
+            T0 = erlang:monotonic_time(millisecond),
+            sort(L),
+            T1 = erlang:monotonic_time(millisecond),
+            T1-T0 < 5000
+        end).
+
+prop_quicksort_time(opts) -> [noshrink].
+prop_quicksort_time() ->
+    ?FORALL_TARGETED(L, ?SUCHTHAT(L, list(integer()), length(L) < 100000),
+        begin
+            T0 = erlang:monotonic_time(millisecond),
+            sort(L),
+            T1 = erlang:monotonic_time(millisecond),
+            ?MAXIMIZE(T1-T0),
+            T1-T0 < 5000
+        end).
+
+prop_mergesort_time() ->
+    ?FORALL_TARGETED(L, ?SUCHTHAT(L, list(integer()), length(L) < 100000),
+        begin
+            T0 = erlang:monotonic_time(millisecond),
+            lists:sort(L),
+            T1 = erlang:monotonic_time(millisecond),
+            T1-T0 < 5000
+        end).
+
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
@@ -73,6 +103,13 @@ next_tree() ->
     fun(OldTree, {_, T}) ->
         ?LET(N, integer(), insert(trunc(N*T*100), OldTree))
     end.
+
+% quicksort
+sort([]) -> [];
+sort([Pivot|T]) ->
+    sort([X || X <- T, X < Pivot])
+    ++ [Pivot] ++
+    sort([X || X <- T, X >= Pivot]).
 
 %%%%%%%%%%%%%%%%%%
 %%% Generators %%%
