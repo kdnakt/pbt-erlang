@@ -48,6 +48,19 @@ prop_tree_neighbor() ->
             true
         end).
 
+prop_tree_search() ->
+    ?FORALL(L, list(integer()),
+        ?NOT_EXISTS(T,
+            ?USERNF(
+                ?LET(X, L, to_tree(X)),
+                next_tree()
+            ),
+            begin
+                {Left, Right} = sides(T),
+                ?MAXIMIZE(Left-Right),
+                false % NOT_EXISTSがパスしないように。
+            end)).
+
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
