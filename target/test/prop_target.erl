@@ -34,6 +34,11 @@ prop_tree() ->
             true
         end).
 
+prop_example() ->
+    % 近傍用マクロ
+    ?FORALL_TARGETED(Var, ?USERNF(list(integer()), next_list()),
+        some_check(Var)).
+
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
@@ -74,3 +79,13 @@ sides(_) -> {0, 0}.
 
 count_inner({node, _, _, _}) -> 1;
 count_inner(_) -> 0.
+
+next_list() ->
+    fun(PreviousValue, {_Depth, _CurrentTemperature}) ->
+        ?LET(Val, some_generator(),
+            modify(Val, PreviousValue))
+    end.
+
+some_check(_) -> true.
+some_generator() -> list(integer()).
+modify(_, _) -> true.
