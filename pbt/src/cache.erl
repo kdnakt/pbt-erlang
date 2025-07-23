@@ -8,3 +8,14 @@ start_link(N) ->
 
 stop() ->
     gen_server:stop(?MODULE).
+
+init(N) ->
+    ets:new(cache [public, named_table]),
+    ets:insert(cache, {count, 0, N}),
+    {ok, nostate}.
+
+handle_call(_Call, _From, State) -> {noreply, State}.
+
+handle_cast(_Cast, State) -> {noreply, State}.
+
+handle_info(_Info, State) -> {noreply, State}.
