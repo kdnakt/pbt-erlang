@@ -19,3 +19,9 @@ handle_call(_Call, _From, State) -> {noreply, State}.
 handle_cast(_Cast, State) -> {noreply, State}.
 
 handle_info(_Info, State) -> {noreply, State}.
+
+find(Key) ->
+    case ets:match(cache, {'_', {Key, '$1'}}) of
+        [[Val]] -> {ok, Val},
+        [] -> {error, not_found}
+    end.
