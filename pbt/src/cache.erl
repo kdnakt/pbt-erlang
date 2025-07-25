@@ -38,3 +38,8 @@ cache(Key, Value) ->
                     ets:insert(cache, [{Current + 1, {Key, Value}}, {count, Current + 1, Max}])
             end
     end.
+
+flush() ->
+    [{count, _, Max}] = ets:lookup(cache, count),
+    ets:delete_all_objects(cache),
+    ets:insert(cache, {count, 0, Max}).
