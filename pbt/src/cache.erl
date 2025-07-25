@@ -25,3 +25,16 @@ find(Key) ->
         [[Val]] -> {ok, Val},
         [] -> {error, not_found}
     end.
+
+cache(Key, Value) ->
+    case ets:match(cache, {'$1', {Key, '_'}}) of
+        [[N]] ->
+            ets:insert(cache, {N, {Key, Value}}),
+        [] ->
+            case ets:lookup(cache, count) of
+                [{count,Max,Max}] ->
+                    ets:insert(cache, [{1,{Key, Value}}, {count, 1, Max}]);
+                [{count,Current,Max}] ->
+                    ets:insert(cache, [{Current + 1, {Key, Value}}, {count, Current + 1, Max}])
+            end
+    end.
