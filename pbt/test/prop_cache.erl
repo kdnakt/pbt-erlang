@@ -43,7 +43,7 @@ val() -> integer().
 next_state(State, _, {call, cache, flush, _}) ->
     State#state{count=0, entries=[]};
 next_state(S=#state{entries=L, count=N, max=M}, _Res,
-          {call, cache, find, [K, V]}) ->
+          {call, cache, cache, [K, V]}) ->
     case lists:keyfind(K, 1, L) of
         false when N =:= M -> S#state{entries = tl(L) ++ [{K,V}]};
         false when N < M -> S#state{entries = L ++ [{K,V}], count=N+1};
