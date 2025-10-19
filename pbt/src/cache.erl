@@ -31,6 +31,7 @@ cache(Key, Value) ->
         [[N]] ->
             ets:insert(cache, {N, {Key, Value}});
         [] ->
+            % erlang:yield(),
             case ets:lookup(cache, count) of
                 [{count,Max,Max}] ->
                     ets:insert(cache, [{1,{Key, Value}}, {count, 1, Max}]);
@@ -42,4 +43,5 @@ cache(Key, Value) ->
 flush() ->
     [{count, _, Max}] = ets:lookup(cache, count),
     ets:delete_all_objects(cache),
+    % erlang:yield(),
     ets:insert(cache, {count, 0, Max}).

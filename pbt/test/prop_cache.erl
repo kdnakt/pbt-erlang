@@ -19,6 +19,21 @@ prop_test() ->
                           aggregate(command_names(Cmds), Result =:= ok))
             end).
 
+prop_parallel() ->
+    ?FORALL(Cmds, parallel_commands(?MODULE),
+      begin
+          cache:start_link(?CACHE_SIZE),
+          {History, State, Result} = run_parallel_commands(?MODULE, Cmds),
+          cache:stop(),
+          ?WHENFAIL(io:format("=======~n"
+                              "Failing command sequence:~n~p~n"
+                              "At state: ~p~n"
+                              "=======~n"
+                              "History: ~p~n",
+                              [Cmds,State,Result,History]),
+                    aggregate(command_names(Cmds), Result =:= ok))
+      end).
+
 initial_state() ->
     #state{}.
 
