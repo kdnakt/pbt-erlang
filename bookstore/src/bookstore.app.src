@@ -1,13 +1,23 @@
 {application, bookstore, [
-    {description, "An OTP application"},
+    {description, "Handling books and book accessories"},
     {vsn, "0.1.0"},
     {registered, []},
     {mod, {bookstore_app, []}},
     {applications, [
         kernel,
-        stdlib
+        stdlib,
+        eql,
+        pgsql
     ]},
-    {env, []},
+    {env, [
+        pg, [
+            {user, "admin"},
+            {password, "admin"},
+            {database, "bookstore_db"},
+            {host, "localhost"},
+            {port, 5432},
+            {ssl, false}
+        ]},
     {modules, []},
     {licenses, ["Apache-2.0"]},
     {links, []}
