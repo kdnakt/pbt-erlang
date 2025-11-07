@@ -10,14 +10,15 @@
         pgsql
     ]},
     {env, [
-        pg, [
+        {pg, [
             {user, "admin"},
             {password, "admin"},
             {database, "bookstore_db"},
             {host, "localhost"},
             {port, 5432},
             {ssl, false}
-        ]},
+        ]}
+    ]},
     {modules, []},
     {licenses, ["Apache-2.0"]},
     {links, []}
