@@ -26,12 +26,7 @@ start_link() ->
 %%                  type => worker(),       % optional
 %%                  modules => modules()}   % optional
 init([]) ->
-    SupFlags = #{
-        strategy => one_for_all,
-        intensity => 0,
-        period => 1
-    },
-    ChildSpecs = [],
-    {ok, {SupFlags, ChildSpecs}}.
+    bookstore_db:load_queries(),
+    {ok, {{one_for_all, 0, 1}, []}}.
 
 %% internal functions
