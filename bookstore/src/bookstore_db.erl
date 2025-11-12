@@ -14,6 +14,43 @@ setup() ->
 teardown() ->
     run_query(teardown_table_books, []).
 
+add_book(ISBN, Title, Author) ->
+    add_book(ISBN, Title, Author, 0, 0).
+
+add_book(ISBN, Title, Author, Owned, Avail) ->
+    BinTitle = iolist_to_binary(Title),
+    BinAuthor = iolist_to_binary(Author),
+    case run_query(add_book,
+                        [ISBN, BinTitle, BinAuthor, Owned, Avail]) of
+        {{insert, 0, 1}, []} -> ok;
+        {error, Reason} -> {error, Reason};
+        Other -> {error, Other  }
+    end.
+
+add_copy(ISBN) ->
+    handle_single_update(run_query(add_copy, [ISBN])).
+
+borrow_copy(ISBN) ->
+    handle_single_update(run_query(borrow_copy, [ISBN])).
+
+return_copy(ISBN) ->
+    handle_single_update(run_query(return_copy, [ISBN])).
+
+find_book_by_author(Author) ->
+    handle_select(
+        run_query(find_by_author, [iolist_to_binary(["%",Author,"%"])])
+    ).
+
+find_book_by_isbn(ISBN) ->
+    handle_select(
+        run_query(find_by_isbn, [ISBN])
+    ).
+
+find_book_by_title(Title) ->
+    handle_select(
+        run_query(find_by_title, [iolist_to_binary(["%",Title,"%"])])
+    ).
+
 run_query(Name, Args) ->
     with_connection(fun(Conn) -> run_query(Name, Args, Conn) end).
 
@@ -43,3 +80,10 @@ query(Name) ->
         [] -> {query_not_found, Name};
         [{_, Query}] -> Query
     end.
+
+handle_select({{select, _}, List}) -> {ok, List};
+handle_select(Error) -> Error.
+
+handle_single_update({{update, 1}, _}) -> ok;
+handle_single_update({error, Reason}) -> {error, Reason};
+handle_single_update(Other) -> {error, Other}.
