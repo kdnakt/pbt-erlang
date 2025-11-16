@@ -1,5 +1,8 @@
 -module(bookstore_db).
--export([load_queries/0, setup/0, teardown/0]).
+-export([load_queries/0, setup/0, teardown/0,
+    add_book/3, add_book/5, add_copy/1, borrow_copy/1, return_copy/1,
+    find_book_by_author/1, find_book_by_isbn/1, find_book_by_title/1
+]).
 
 load_queries() ->
     ets:new(bookstore_sql, [named_table, public, {read_concurrency, true}]),
