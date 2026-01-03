@@ -69,7 +69,7 @@ with_connection(Fun) ->
 connect() -> connect(application:get_env(bookstore, pg, [])).
 
 connect(Args) ->
-    try pgsql_connection:connect(Args) of
+    try pgsql_connection:open(Args) of
         {pgsql_connection, _} = Conn -> {ok, Conn}
     catch
         throw:Error -> {error, Error}
