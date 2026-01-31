@@ -21,15 +21,33 @@ prop_test() ->
 initial_state() -> #{}.
 
 command(_State) ->
-    oneof([
-        {call, bookstore_db, add_book, [isbn(), title(), author(), 1, 1]},
-        {call, bookstore_db, add_book, [isbn()]},
-        {call, bookstore_db, borrow_copy, [isbn()]},
-        {call, bookstore_db, return_copy, [isbn()]},
-        {call, bookstore_db, find_book_by_author, [author()]},
-        {call, bookstore_db, find_book_by_title, [title()]},
-        {call, bookstore_db, find_book_by_isbn, [isbn()]}
-    ]).
+    AlwaysPossible = [
+        {call, book_shim, add_book_new, [isbn(), title(), author(), 1, 1]},
+        {call, book_shim, add_copy_new, [isbn()]},
+        {call, book_shim, borrow_copy_unknown, [isbn()]},
+        {call, book_shim, return_copy_unknown, [isbn()]},
+        {call, book_shim, find_book_by_isbn_unknown, [isbn()]},
+        {call, book_shim, find_book_by_author_unknown, [author()]},
+        {call, book_shim, find_book_by_title_unknown, [title()]}
+    ],
+    ReliesOnState = case maps:size(State) of
+        0 ->
+            [];
+        _ ->
+            S = State,
+            [{call, book_shim, add_book_existing,
+                [isbn(S), title(), author(), 1, 1]},
+             {call, book_shim, add_copy_existing, [isbn(S)]},
+             {call, book_shim, borrow_copy_avail, [isbn(S)]},
+             {call, book_shim, borrow_copy_unavail, [isbn(S)]},
+             {call, book_shim, return_copy_existing, [isbn(S)]},
+             {call, book_shim, return_copy_full, [isbn(S)]},
+             {call, book_shim, find_book_by_isbn_exists, [isbn(S)]},
+             {call, book_shim, find_book_by_author_matching, [author(S)]},
+             {call, book_shim, find_book_by_title_matching, [title(S)]}   
+            ]
+    end,
+    oneof(AlwaysPossible ++ ReliesOnState).
 
 precondition(_State, {call, _Mod, _Fun, _Args}) ->
     true.
@@ -43,9 +61,13 @@ next_state(State, _Res, {call, _Mod, _Fun, _Args}) ->
 
 title() ->
     ?LET(S, string(), elements([S, unicode:characters_to_binary(S)])).
+title(State) ->
+    elements([partial(Title) || {_, Title, _, _, _} <- maps:values(State)]).
 
 author() ->
     ?LET(S, string(), elements([S, unicode:characters_to_binary(S)])).
+author(State) ->
+    elements([partial(Author) || {_, _, Author, _, _} <- maps:values(State)]).
 
 isbn() ->
     ?LET(ISBN,
@@ -55,3 +77,11 @@ isbn() ->
          ?LET(X, range(0, 999), integer_to_list(X)),
          frequency([{10, range($0, $9)}, {1, "X"}])],
          iolist_to_binary(lists:join("-", ISBN))).
+isbn(State) ->
+    elements(maps:keys(State)).
+
+
+partial(String) ->
+    L = string:length(String),
+    ?LET({Start, Len}, {range(0, L)}, non_neg_integer()},
+        string:substr(String, Start, Len)).
