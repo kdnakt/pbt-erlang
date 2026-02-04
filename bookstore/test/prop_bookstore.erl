@@ -49,8 +49,26 @@ command(_State) ->
     end,
     oneof(AlwaysPossible ++ ReliesOnState).
 
-precondition(_State, {call, _Mod, _Fun, _Args}) ->
-    true.
+precondition(S, {call, _, add_book_new, [ISBN|_]}) ->
+    not has_isbn(S, ISBN);
+precondition(S, {call, _, add_copy_new, [ISBN]}) ->
+    not has_isbn(S, ISBN);
+precondition(S, {call, _, borrow_copy_unknown, [ISBN]}) ->
+    not has_isbn(S, ISBN);
+precondition(S, {call, _, return_copy_unknown, [ISBN]}) ->
+    not has_isbn(S, ISBN);
+precondition(S, {call, _, find_book_by_isbn_unknown, [ISBN]}) ->
+    not has_isbn(S, ISBN);
+precondition(S, {call, _, find_book_by_author_unknown, [Auth]}) ->
+    not like_author(S, Auth);
+precondition(S, {call, _, find_book_by_title_unknown, [Title]}) ->
+    not like_title(S, Title);
+precondition(S, {call, _, find_book_by_author_matching, [Auth]}) ->
+    like_author(S, Auth);
+precondition(S, {call, _, find_book_by_title_matching, [Title]}) ->
+    like_title(S, Title);
+precondition(S, {call, _Mod, _Fun, [ISBN|_]}) ->
+    has_isbn(S, ISBN).
 
 postcondition(_State, {call, _Mod, _Fun, _Args}, _Res) ->
     true.
@@ -85,3 +103,15 @@ partial(String) ->
     L = string:length(String),
     ?LET({Start, Len}, {range(0, L)}, non_neg_integer()},
         string:substr(String, Start, Len)).
+
+% Helpers
+has_isbn(Map, ISBN) ->
+    maps:is_key(ISBN, Map).
+
+like_author(Map, Auth) ->
+    lists:any(fun({_, _, A, _, _}) -> nomatch =/= string:find(A, Auth) end,
+                maps:values(Map)).
+
+like_title(Map, Title) ->
+    lists:any(fun({_, T, _, _, _}) -> nomatch =/= string:find(T, Title) end,
+                maps:values(Map)).
