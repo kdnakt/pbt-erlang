@@ -73,6 +73,17 @@ precondition(S, {call, _Mod, _Fun, [ISBN|_]}) ->
 postcondition(_State, {call, _Mod, _Fun, _Args}, _Res) ->
     true.
 
+next_state(State, _, {call, _, add_book_new, [ISBN, Title, Author, Owned, Avail]}) ->
+    State#{ISBN => {ISBN, Title, Author, Owned, Avail}};
+next_state(State, _, {call, _, add_copy_existing, [ISBN]}) ->
+    #{ISBN := {ISBN, Title, Author, Owned, Avail} } = State,
+    State#{ISBN => {ISBN, Title, Author, Owned + 1, Avail + 1}};
+next_state(State, _, {call, _, borrow_copy_avail, [ISBN]}) ->
+    #{ISBN := {ISBN, Title, Author, Owned, Avail} } = State,
+    State#{ISBN => {ISBN, Title, Author, Owned, Avail - 1}};
+next_state(State, _, {call, _, return_copy_existing, [ISBN]}) ->
+    #{ISBN := {ISBN, Title, Author, Owned, Avail} } = State,
+    State#{ISBN => {ISBN, Title, Author, Owned, Avail + 1}};
 next_state(State, _Res, {call, _Mod, _Fun, _Args}) ->
     NewState = State,
     NewState.
