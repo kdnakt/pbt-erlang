@@ -20,7 +20,7 @@ prop_test() ->
 
 initial_state() -> #{}.
 
-command(_State) ->
+command(State) ->
     AlwaysPossible = [
         {call, book_shim, add_book_new, [isbn(), title(), author(), 1, 1]},
         {call, book_shim, add_copy_new, [isbn()]},
@@ -101,7 +101,7 @@ isbn(State) ->
 
 partial(String) ->
     L = string:length(String),
-    ?LET({Start, Len}, {range(0, L)}, non_neg_integer()},
+    ?LET({Start, Len}, {range(0, L), non_neg_integer()},
         string:substr(String, Start, Len)).
 
 % Helpers
