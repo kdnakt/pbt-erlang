@@ -105,7 +105,9 @@ postcondition(S, {_, _, find_book_by_title_matching, [Title]}, {ok,Res}) ->
 postcondition(_, {_, _, find_book_by_title_unknown, _}, {ok, []}) ->
     true;
 postcondition(_State, {call, _Mod, _Fun, _Args}, _Res) ->
-    true.
+    io:format("~nnon-matching postcondition: {~p,~p,~p} -> ~p~n",
+        [_Mod, _Fun, _Args, _Res]),
+    false.
 
 next_state(State, _, {call, _, add_book_new, [ISBN, Title, Author, Owned, Avail]}) ->
     State#{ISBN => {ISBN, Title, Author, Owned, Avail}};
