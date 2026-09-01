@@ -124,15 +124,22 @@ next_state(State, _Res, {call, _Mod, _Fun, _Args}) ->
     NewState = State,
     NewState.
 
-title() ->
-    ?LET(S, string(), elements([S, unicode:characters_to_binary(S)])).
+title() -> friendly_unicode().
 title(State) ->
     elements([partial(Title) || {_, Title, _, _, _} <- maps:values(State)]).
 
-author() ->
-    ?LET(S, string(), elements([S, unicode:characters_to_binary(S)])).
+author() -> friendly_unicode().
 author(State) ->
     elements([partial(Author) || {_, _, Author, _, _} <- maps:values(State)]).
+
+friendly_unicode() ->
+    ?LET(X, ?SUCHTHAT(S, string(),
+                      not lists:member(0, S) andalso
+                      nomatch =:= string:find(S, "\\") andalso
+                      nomatch =:= string:find(S, "_") andalso
+                      nomatch =:= string:find(S, "%") andalso
+                      string:length(S) < 256),
+         elements([X, unicode:characters_to_binary(X)])).
 
 isbn() ->
     ?LET(ISBN,
