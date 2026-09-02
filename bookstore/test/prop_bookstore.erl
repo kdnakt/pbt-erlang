@@ -90,18 +90,18 @@ postcondition(_, {_, _, return_copy_existing, _}, ok) ->
     true;
 postcondition(_, {_, _, return_copy_unknown, _}, {error, not_found}) ->
     true;
-postcondition(S, {_, _, find_book_by_isbn_exists, [ISBN]}, Res) ->
-    Res =:= {ok, [maps:get(ISBN, S, undefined)]};
+postcondition(S, {_, _, find_book_by_isbn_exists, [ISBN]}, {ok, Res}) ->
+    book_equal(Res, maps:get(ISBN, S, undefined));
 postcondition(_, {_, _, find_book_by_isbn_unknown, _}, {ok, []}) ->
     true;
-postcondition(S, {_, _, find_book_by_author_matching, [Auth]}, {ok,Res}) ->
+postcondition(S, {_, _, find_book_by_author_matching, [Auth]}, {ok, Res}) ->
     Map = maps:filter(fun(_, {_,_,A,_,_}) -> nomatch =/= string:find(A, Auth) end, S),
-    lists:sort(Res) =:= lists:sort(maps:values(Map));
+    books_equal(lists:sort(Res), lists:sort(maps:values(Map)));
 postcondition(_, {_, _, find_book_by_author_unknown, _}, {ok, []}) ->
     true;
-postcondition(S, {_, _, find_book_by_title_matching, [Title]}, {ok,Res}) ->
+postcondition(S, {_, _, find_book_by_title_matching, [Title]}, {ok, Res}) ->
     Map = maps:filter(fun(_, {_,T,_,_,_}) -> nomatch =/= string:find(T, Title) end, S),
-    lists:sort(Res) =:= lists:sort(maps:values(Map));
+    books_equal(lists:sort(Res), lists:sort(maps:values(Map)));
 postcondition(_, {_, _, find_book_by_title_unknown, _}, {ok, []}) ->
     true;
 postcondition(_State, {call, _Mod, _Fun, _Args}, _Res) ->
@@ -169,3 +169,16 @@ like_author(Map, Auth) ->
 like_title(Map, Title) ->
     lists:any(fun({_, T, _, _, _}) -> nomatch =/= string:find(T, Title) end,
                 maps:values(Map)).
+
+books_equal([], []) -> true;
+books_equal([A|As], [B|Bs]) ->
+    book_equal(A, B) andalso books_equal(As, Bs);
+books_equal(_, _) -> false.
+
+book_equal({ISBNA, TitleA, AuthorA, OwnedA, AvailA},
+           {ISBNB, TitleB, AuthorB, OwnedB, AvailB}) ->
+    {ISBNA, OwnedA, AvailA} =:= {ISBNB, OwnedB, AvailB}
+    andalso
+    string:equal(TitleA, TitleB)
+    andalso
+    string:equal(AuthorA, AuthorB).
