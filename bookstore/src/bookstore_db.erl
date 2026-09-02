@@ -88,5 +88,6 @@ handle_select({{select, _}, List}) -> {ok, List};
 handle_select(Error) -> Error.
 
 handle_single_update({{update, 1}, _}) -> ok;
+handle_single_update({{update, 0}, _}) -> {error, not_found};
 handle_single_update({error, Reason}) -> {error, Reason};
 handle_single_update(Other) -> {error, Other}.
