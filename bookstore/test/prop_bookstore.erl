@@ -67,6 +67,16 @@ precondition(S, {call, _, find_book_by_author_matching, [Auth]}) ->
     like_author(S, Auth);
 precondition(S, {call, _, find_book_by_title_matching, [Title]}) ->
     like_title(S, Title);
+precondition(S, {call, _, borrow_copy_avail, [ISBN]}) ->
+    0 < element(5, maps:get(ISBN, S));
+precondition(S, {call, _, borrow_copy_unavail, [ISBN]}) ->
+    0 =:= element(5, maps:get(ISBN, S));
+precondition(S, {call, _, return_copy_existing, [ISBN]}) ->
+    {_, _, _, Owned, Avail} = maps:get(ISBN, S),
+    Owned =/= Avail;
+precondition(S, {call, _, return_copy_full, [ISBN]}) ->
+    {_, _, _, Owned, Avail} = maps:get(ISBN, S),
+    Owned =:= Avail;
 precondition(S, {call, _Mod, _Fun, [ISBN|_]}) ->
     has_isbn(S, ISBN).
 
