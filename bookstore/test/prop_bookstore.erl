@@ -100,7 +100,7 @@ postcondition(_, {_, _, return_copy_existing, _}, ok) ->
     true;
 postcondition(_, {_, _, return_copy_unknown, _}, {error, not_found}) ->
     true;
-postcondition(S, {_, _, find_book_by_isbn_exists, [ISBN]}, {ok, Res}) ->
+postcondition(S, {_, _, find_book_by_isbn_exists, [ISBN]}, {ok, [Res]}) ->
     book_equal(Res, maps:get(ISBN, S, undefined));
 postcondition(_, {_, _, find_book_by_isbn_unknown, _}, {ok, []}) ->
     true;
@@ -166,7 +166,7 @@ isbn(State) ->
 partial(String) ->
     L = string:length(String),
     ?LET({Start, Len}, {range(0, L), non_neg_integer()},
-        string:substr(String, Start, Len)).
+        string:slice(String, Start, Len)).
 
 % Helpers
 has_isbn(Map, ISBN) ->
