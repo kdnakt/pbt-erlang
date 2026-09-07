@@ -34,7 +34,15 @@ add_copy(ISBN) ->
     handle_single_update(run_query(add_copy, [ISBN])).
 
 borrow_copy(ISBN) ->
-    handle_single_update(run_query(borrow_copy, [ISBN])).
+    case find_book_by_isbn(ISBN) of
+        {error, Reason} -> {error, Reason};
+        {ok, []} -> {error, not_found};
+        {ok, _} ->
+            case handle_single_update(run_query(borrow_copy, [ISBN])) of
+                {error, not_found} -> {error, unavailable};
+                Result -> Result
+            end
+    end.
 
 return_copy(ISBN) ->
     handle_single_update(run_query(return_copy, [ISBN])).
