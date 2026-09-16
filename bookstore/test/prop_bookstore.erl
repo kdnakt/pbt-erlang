@@ -18,6 +18,23 @@ prop_test() ->
         end)
     ).
 
+prop_parallel() ->
+    ?SETUP(fun() ->
+        {ok, Apps} = application:ensure_all_started(bookstore),
+        fun() -> [application:stop(App) || App <- Apps], ok end
+    end,
+    ?FORALL(Cmds, parallel_commands(?MODULE),
+        begin
+            bookstore_db:setup(),
+            {History, State, Result} = run_parallel_commands(?MODULE, Cmds),
+            bookstore_db:teardown(),
+            ?WHENFAIL(io:format("History: ~p\nState: ~p\nResult: ~p\n",
+                                [History, State, Result]),
+                                aggregate(command_names(Cmds), Result =:= ok))
+        end)
+    ).
+
+
 initial_state() -> #{}.
 
 command(State) ->
