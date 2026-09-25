@@ -26,3 +26,12 @@ timeout() ->
         fun() -> true end, timer:hours(1),
         options()
     ).
+
+options() ->
+    [{n_error, 3},
+        {time_error, timer:minutes(30)},
+        {n_timeout, 3},
+        {time_timeout, timer:minutes(30)},
+        {n_call_timeout, 3},
+        {time_call_timeout, timer:minutes(30)},
+        {ignore_errors, [ignore1, ignore2]}].
