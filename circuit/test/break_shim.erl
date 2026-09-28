@@ -38,4 +38,4 @@ options() ->
 
 manual_block() -> circuit_breaker:block(?SERVICE).
 manual_deblock() -> circuit_breaker:deblock(?SERVICE).
-manual_reset() -> circuit_breaker:reset(?SERVICE).
+manual_reset() -> circuit_breaker:clear(?SERVICE).
