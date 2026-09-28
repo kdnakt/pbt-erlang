@@ -35,3 +35,7 @@ options() ->
         {n_call_timeout, 3},
         {time_call_timeout, timer:minutes(30)},
         {ignore_errors, [ignore1, ignore2]}].
+
+manual_block() -> circuit_breaker:block(?SERVICE).
+manual_deblock() -> circuit_breaker:deblock(?SERVICE).
+manual_reset() -> circuit_breaker:reset(?SERVICE).
