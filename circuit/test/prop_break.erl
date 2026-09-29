@@ -33,11 +33,41 @@ initial_state_data() -> #data{}.
 unregistered(_Data) -> [{ok, {call, break_shim, success, []}}].
 
 % TODO
-ok(_Data) -> [].
+ok(_Data) -> [
+    {history, {call, break_shim, success, []}},
+    {history, {call, break_shim, err, [valid_error()]}},
+    {tripped, {call, break_shim, err, [valid_error()]}},
+    {history, {call, break_shim, ignored_error, [ignored_error()]}},
+    {history, {call, break_shim, timeout, []}},
+    {tripped, {call, break_shim, timeout, []}},
+    {blocked, {call, break_shim, manual_block, []}},
+    {ok, {call, break_shim, manual_deblock, []}},
+    {ok, {call, break_shim, manual_reset, []}}
+].
 
-tripped(_Data) -> [].
+tripped(_Data) -> [
+    {history, {call, break_shim, success, []}},
+    {history, {call, break_shim, err, [valid_error()]}},
+    {history, {call, break_shim, ignored_error, [ignored_error()]}},
+    {history, {call, break_shim, timeout, []}},
+    {blocked, {call, break_shim, manual_block, []}},
+    {ok, {call, break_shim, manual_deblock, []}},
+    {ok, {call, break_shim, manual_reset, []}}
+].
 
-blocked(_Data) -> [].
+blocked(_Data) -> [
+    {history, {call, break_shim, success, []}},
+    {history, {call, break_shim, err, [valid_error()]}},
+    {history, {call, break_shim, ignored_error, [ignored_error()]}},
+    {history, {call, break_shim, timeout, []}},
+    {history, {call, break_shim, manual_block, []}},
+    {history, {call, break_shim, manual_reset, []}},
+    {ok, {call, break_shim, manual_deblock, []}}
+].
+
+valid_error() -> elements([badarg, badmatch, badarith, whatever]).
+
+ignored_error() -> elements([ignore1, ignore2]).
 
 %% Picks whether a command should be valid. 
 precondition(_From, _To, #data{}, {call, _Mod, _Fun, _Args}) -> true.
