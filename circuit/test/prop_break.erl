@@ -70,7 +70,13 @@ valid_error() -> elements([badarg, badmatch, badarith, whatever]).
 ignored_error() -> elements([ignore1, ignore2]).
 
 %% Picks whether a command should be valid. 
-precondition(_From, _To, #data{}, {call, _Mod, _Fun, _Args}) -> true.
+precondition(unregistered, ok, _, {call, _, Call, _}) ->
+    Call =:= success;
+precondition(ok, To, #data{errors=N, limit=L}, {call, _, err, _}) ->
+    (To =:= tripped andalso N + 1 =:= L) orelse (To =:= ok andalso N + 1 =/= L);
+precondition(ok, To, #data{timeouts=N, limit=L}, {call, _, timeout, _}) ->
+    (To =:= tripped andalso N + 1 =:= L) orelse (To =:= ok andalso N + 1 =/= L);
+precondition(_From, _To, _Data, _Call) -> true.
 
 %% Given the state states and data *prior* to the call
 %% `{call, Mod, Fun, Args}', determine if the result `Res' (coming
