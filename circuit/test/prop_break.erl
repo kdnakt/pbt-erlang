@@ -83,6 +83,14 @@ precondition(_From, _To, _Data, _Call) -> true.
 %% from the actual system) makes sense.
 postcondition(_From, _To, _Data, {call, _Mod, _Fun, _Args}, _Res) -> true.
 
+next_state_data(ok, _To, Data=#data{errors=N}, _Res, {call, _, err, _}) ->
+    Data#data{errors=N + 1};
+next_state_data(ok, _To, Data=#data{timeouts=N}, _Res, {call, _, timeout, _}) ->
+    Data#data{timeouts=N + 1};
+next_state_data(_From, _To, Data, _Res, {call, _, manual_block, _}) ->
+    Data#data{errors=0, timeouts=0};
+next_state_data(_From, _To, Data, _Res, {call, _, manual_reset, _}) ->
+    Data#data{errors=0, timeouts=0};
 %% Assuming the postcondition for a call was true, update the model
 %% accordingly for the test to proceed. 
 next_state_data(_From, _To, Data, _Res, {call, _Mod, _Fun, _Args}) ->
