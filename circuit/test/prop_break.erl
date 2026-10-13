@@ -78,11 +78,6 @@ precondition(ok, To, #data{timeouts=N, limit=L}, {call, _, timeout, _}) ->
     (To =:= tripped andalso N + 1 =:= L) orelse (To =:= ok andalso N + 1 =/= L);
 precondition(_From, _To, _Data, _Call) -> true.
 
-%% Given the state states and data *prior* to the call
-%% `{call, Mod, Fun, Args}', determine if the result `Res' (coming
-%% from the actual system) makes sense.
-postcondition(_From, _To, _Data, {call, _Mod, _Fun, _Args}, _Res) -> true.
-
 next_state_data(ok, _To, Data=#data{errors=N}, _Res, {call, _, err, _}) ->
     Data#data{errors=N + 1};
 next_state_data(ok, _To, Data=#data{timeouts=N}, _Res, {call, _, timeout, _}) ->
@@ -96,3 +91,24 @@ next_state_data(_From, _To, Data, _Res, {call, _, manual_reset, _}) ->
 next_state_data(_From, _To, Data, _Res, {call, _Mod, _Fun, _Args}) ->
     NewData = Data,
     NewData.
+
+postcondition(tripped, tripped, _Data, _, {error, {circuit_breaker, _}}) ->
+    true;
+postcondition(_, blocked, _Data, {call, _, manual_block, _}, ok) ->
+    true;
+postcondition(_, blocked, _Data, _Call, {error, {circuit_breaker, _}}) ->
+    true;
+postcondition(_, ok, _Data, {call, _, success, _}, success) ->
+    true;
+postcondition(_, ok, _Data, {call, _, manual_deblock, _}, ok) ->
+    true;
+postcondition(_, _, _Data, {call, _, manual_reset, _}, ok) ->
+    true;
+postcondition(ok, _, _Data, {call, _, timeout, _}, {error, timeout}) ->
+    true;
+postcondition(ok, _, _Data, {call, _, err, _}, {error, Err}) ->
+    not lists:member(Err, [ignore1, ignore2]);
+postcondition(ok, _, _Data, {call, _, ignored_error, _}, {error, Err}) ->
+    lists:member(Err, [ignore1, ignore2]);
+postcondition(_From, _To, _Data, {call, _Mod, _Fun, _Args}, _Res) ->
+    false.
