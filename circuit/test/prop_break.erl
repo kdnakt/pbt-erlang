@@ -8,9 +8,9 @@
 prop_test() ->
     ?FORALL(Cmds, proper_fsm:commands(?MODULE),
         begin
-            actual_system:start_link(),
+            {ok, Pid} = circuit_breaker:start_link(),
             {History,State,Result} = proper_fsm:run_commands(?MODULE, Cmds), 
-            actual_system:stop(),
+            gen_server:stop(Pid, normal, 5000),
             ?WHENFAIL(io:format("History: ~p\nState: ~p\nResult: ~p\n",
                                 [History,State,Result]),
                       aggregate(zip(proper_fsm:state_names(History),
