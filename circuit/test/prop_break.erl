@@ -82,10 +82,16 @@ next_state_data(ok, _To, Data=#data{errors=N}, _Res, {call, _, err, _}) ->
     Data#data{errors=N + 1};
 next_state_data(ok, _To, Data=#data{timeouts=N}, _Res, {call, _, timeout, _}) ->
     Data#data{timeouts=N + 1};
-next_state_data(_From, _To, Data, _Res, {call, _, manual_block, _}) ->
+next_state_data(_From, _To, Data, _Res, {call, _, manual_deblock, _}) ->
     Data#data{errors=0, timeouts=0};
 next_state_data(_From, _To, Data, _Res, {call, _, manual_reset, _}) ->
     Data#data{errors=0, timeouts=0};
+next_state_data(ok, _To, Data=#data{errors=E, timeouts=T}, _Res,
+        {call, _, F, _}) when F =:= success; F =:= ignored_error ->
+    if E > 0 -> Data#data{errors=E - 1};
+       T > 0 -> Data#data{timeouts=T - 1};
+       E =:= 0, T =:= 0 -> Data
+    end;
 %% Assuming the postcondition for a call was true, update the model
 %% accordingly for the test to proceed. 
 next_state_data(_From, _To, Data, _Res, {call, _Mod, _Fun, _Args}) ->
