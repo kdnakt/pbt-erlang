@@ -1,7 +1,7 @@
 -module(prop_break).
 -include_lib("proper/include/proper.hrl").
 
--export([initial_state/0, initial_state_data/0,
+-export([initial_state/0, initial_state_data/0, weight/3,
          unregistered/1, ok/1, tripped/1, blocked/1, % state generators
          precondition/4, postcondition/5, next_state_data/5]).
 
@@ -118,3 +118,14 @@ postcondition(ok, _, _Data, {call, _, ignored_error, _}, {error, Err}) ->
     lists:member(Err, [ignore1, ignore2]);
 postcondition(_From, _To, _Data, {call, _Mod, _Fun, _Args}, _Res) ->
     false.
+
+weight(ok, tripped, _) ->
+    5;
+weight(ok, ok, {call, _, F, _}) ->
+    case F of
+        error -> 4;
+        timeout -> 4;
+        _ -> 1
+    end;
+weight(_, _, _) ->
+    1.
